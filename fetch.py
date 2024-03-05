@@ -64,37 +64,3 @@ def fetch_stock_info(sleep_time=1):
             time.sleep(sleep_time)
     print()
     print("資料已成功存入/更新至資料庫")
-    
-def fetch_invastors():
-    start_date = get_invastors_latestDate()
-    end_date = datetime.now().date()
-    error = 0
-    while start_date <= end_date:
-        current_date = start_date.strftime('%Y%m%d')
-        data = None
-        try:
-            data = fetch(f'https://www.twse.com.tw/rwd/zh/fund/T86?date={current_date}\&selectType=ALLBUT0999&response=json')
-            error = 0
-        except Exception as err:
-            error += 1
-            print('發生錯誤，正在重試...')
-            time.sleep(5)
-            if error>=3:
-                print("\n持續發生錯誤：", err)
-                return
-            continue
-        data = investors_data_processor(data, start_date)
-        if data is not None:
-            placeholders = ','.join(['%s'] * 24)
-            columns = ','.join(data.columns)
-            sql = f"INSERT INTO institutional_investors ({columns}) VALUES ({placeholders}) ON DUPLICATE KEY UPDATE " + ", ".join([f"{col}=VALUES({col})" for col in data.columns])
-            cursor = connection.cursor()
-            for index, item in data.iterrows():
-                item = [None if pd.isna(val) else val for val in item]
-                cursor.execute(sql, tuple(item))
-            connection.commit()
-            print('正在下載：', start_date)
-        start_date += timedelta(days=1)
-        time.sleep(1)
-    print()
-    print("資料已成功存入/更新至資料庫")

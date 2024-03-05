@@ -13,13 +13,6 @@ def fetch(url):
     res = requests.get(url, headers=headers)
     return res.json()
 
-def get_invastors_latestDate():
-    sql = 'select max(date) from institutional_investors'
-    latest_date = query(sql)[0][0]
-    if latest_date is None:  
-        return datetime(2012, 5, 2).date()
-    return latest_date
-
 def progress_percentage(start_date, end_date, current_date):
     total_days = (end_date - start_date).days
     passed_days = (current_date - start_date).days
