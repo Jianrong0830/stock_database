@@ -4,14 +4,17 @@ from datetime import datetime
 import pandas as pd
 from info import *
 
-def fetch(url):
+def fetch(url, data=None):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
         'Cookie': '_ga_5XRGGGWBYX=GS1.3.1701758811.1.1.1701759962.0.0.0; _gid=GA1.3.2010723331.1708938112; _ga_LTMT28749H=GS1.3.1708938112.6.0.1708938112.0.0.0; _ga=GA1.1.1442473338.1701679471; JSESSIONID=57A13E0F33B88DBBAEF679A7C3FE3822; _ga_J2HVMN6FVP=GS1.1.1709012129.6.1.1709013428.60.0.0',
         'Referer': 'https://www.twse.com.tw/zh/trading/foreign/t86.html',
     }
-    res = requests.get(url, headers=headers)
-    return res.json()
+    if data is None:
+        res = requests.get(url, headers=headers)
+    else:
+        res = requests.post(url, data)
+    return res
 
 def progress_percentage(start_date, end_date, current_date):
     total_days = (end_date - start_date).days
@@ -29,6 +32,12 @@ def get_latestDate():
     if investor_date is None: 
         investor_date = datetime(2012, 5, 2).date()
     return min(close_date, eps_date, volume_date, investor_date)
+
+def get_eps_lastYear():
+    year = query("SELECT MAX(year) FROM eps_data;")[0][0]
+    if year is None:
+        return 2013
+    return year
 
 def investors_data_processor(res, date):
     data, columns = res.get('data'), res.get('fields')

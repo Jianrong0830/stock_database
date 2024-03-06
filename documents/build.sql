@@ -162,3 +162,11 @@ CREATE TABLE trading_volumes (
     PARTITION p113 VALUES LESS THAN (2024), -- 民國113年，西元2024年
     PARTITION p114 VALUES LESS THAN MAXVALUE
 );
+
+CREATE TABLE eps_data (
+    stock_id VARCHAR(10) NOT NULL,
+    year YEAR NOT NULL,  -- 使用公元年
+    quarter INT NOT NULL CHECK (quarter BETWEEN 1 AND 4),
+    eps DECIMAL(10, 2) NOT NULL,
+    PRIMARY KEY (stock_id, year, quarter)
+);

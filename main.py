@@ -1,3 +1,5 @@
 from fetch import *
 
-fetch_stock_info(1) #¼Æ¦r¬O¨C¦¸§ì¨úªº¶¡®æ®É¶¡
+#æ•¸å­—æ˜¯æ¯æ¬¡æŠ“å–çš„é–“æ ¼æ™‚é–“
+fetch_eps(0)
+fetch_stock_info(1)
