@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-from database import connection
+from database import *
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import time
@@ -9,6 +9,7 @@ from tqdm import tqdm
 from io import StringIO
 
 def fetch_stock_info(sleep_time=1):
+    update_all_partition()
     start_date= get_latestDate()
     current_date = start_date
     end_date = datetime.now().date()
