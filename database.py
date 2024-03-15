@@ -26,7 +26,7 @@ def add_partition(table):
     print(f'新增{table}區間')
     sql = "select max(PARTITION_DESCRIPTION) from information_schema.partitions WHERE table_name = %s;"
     max_year = int(query(sql, (table, ))[0][0])
-    now = datetime.now().year+10
+    now = datetime.now().year
     if max_year <= now:
         for year in range(max_year + 1, now + 2):
             tw_year = 'p'+str(year - 1911)
