@@ -23,15 +23,17 @@ def progress_percentage(start_date, end_date, current_date):
     return "{:.2f}%".format(progress_percentage)
 
 def get_latestDate():
-    close_date = query("SELECT MAX(date) FROM closing_prices;")[0][0]
-    eps_date = query("SELECT MAX(date) FROM PE_ratios;")[0][0]
-    volume_date = query("SELECT MAX(date) FROM trading_volumes;")[0][0]
-    investor_date = query("SELECT MAX(date) FROM institutional_investors;")[0][0]
-    if None in (close_date, eps_date, volume_date):
-        return datetime(2004, 2, 11).date()
-    if investor_date is None: 
-        investor_date = datetime(2012, 5, 2).date()
-    return min(close_date, eps_date, volume_date, investor_date)
+    query_result = query("""
+        SELECT
+            (SELECT MAX(date) FROM closing_prices) AS close_date,
+            (SELECT MAX(date) FROM PE_ratios) AS eps_date,
+            (SELECT MAX(date) FROM trading_volumes) AS volume_date,
+            (SELECT MAX(date) FROM institutional_investors) AS investor_date
+    ;""")[0]
+    dates = [d if d is not None else datetime(2004, 2, 11).date() for d in query_result[:-1]]
+    investor_date = query_result[-1] if query_result[-1] is not None else datetime(2012, 5, 2).date()
+
+    return min(*dates, investor_date)
 
 def get_eps_lastYear():
     year = query("SELECT MAX(year) FROM eps_data;")[0][0]
